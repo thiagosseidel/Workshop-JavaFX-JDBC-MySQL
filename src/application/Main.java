@@ -25,7 +25,7 @@ public class Main extends Application {
 			Scene mainScene = new Scene(scrollPane);
 			
 			primaryStage.setScene(mainScene);
-			primaryStage.setMaximized(true);
+			//primaryStage.setMaximized(true);
 			primaryStage.setTitle("Workshop (JavaFX-JDBC-MySQL)");
 			primaryStage.show();
 		
