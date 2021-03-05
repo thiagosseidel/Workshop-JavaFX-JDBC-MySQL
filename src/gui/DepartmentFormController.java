@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
@@ -18,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Department;
+import model.exceptions.ValidationException;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable {
@@ -71,15 +74,21 @@ public class DepartmentFormController implements Initializable {
 			throw new IllegalStateException("Service was null");		
 		}
 		
-		updateEntityValues();
-		
 		try {
 			
+			updateEntityValues();
+			
 			service.saveOrUpdate(entity);
+			
 			notifyDataChangeListeners();
+			
 			Utils.currentStage(event).close();
 		}
-		catch(DbException e) {
+		catch (ValidationException e) {
+			
+			setErrorMessages(e.getErrors());
+		}
+		catch (DbException e) {
 			
 			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
 		}
@@ -101,8 +110,21 @@ public class DepartmentFormController implements Initializable {
 			entity = new Department();
 		}
 		
+		ValidationException exception = new ValidationException("Validation error.");
+		
 		entity.setId(Utils.tryParseToInt(txtId.getText()));
+		
+		if (txtName.getText() == null || txtName.getText().trim().isEmpty()) {
+			
+			exception.addError("Name", "Field can't be empty");
+		}
+		
 		entity.setName(txtName.getText());
+		
+		if (!exception.getErrors().isEmpty()) {
+			
+			throw exception;
+		}
 	}
 	
 	@FXML
@@ -132,5 +154,15 @@ public class DepartmentFormController implements Initializable {
 		
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
+	}
+	
+	private void setErrorMessages(Map<String, String> errors) {
+		
+		Set<String> fields = errors.keySet();
+		
+		if (fields.contains("Name")) {
+			
+			labelErrorName.setText(errors.get("Name"));
+		}
 	}
 }
