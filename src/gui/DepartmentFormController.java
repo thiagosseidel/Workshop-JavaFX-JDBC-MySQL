@@ -160,6 +160,8 @@ public class DepartmentFormController implements Initializable {
 		
 		Set<String> fields = errors.keySet();
 		
+		labelErrorName.setText("");
+		
 		if (fields.contains("Name")) {
 			
 			labelErrorName.setText(errors.get("Name"));

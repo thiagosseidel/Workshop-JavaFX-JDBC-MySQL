@@ -30,6 +30,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.entities.Department;
 import model.entities.Seller;
 import model.services.DepartmentService;
 import model.services.SellerService;
@@ -56,6 +57,9 @@ public class SellerListController implements Initializable, DataChangeListener {
 	
 	@FXML
 	private TableColumn<Seller, Double> tableColumnBaseSalary;
+	
+	@FXML
+	private TableColumn<Seller, Department> tableColumnDepartment;
 
 	@FXML
 	private TableColumn<Seller, Seller> tableColumnEDIT;
@@ -117,6 +121,8 @@ public class SellerListController implements Initializable, DataChangeListener {
 
 		tableViewSeller.setItems(obsList);
 
+		initColumnDepartment();
+		
 		initEditButtons();
 		
 		initRemoveButtons();
@@ -163,6 +169,30 @@ public class SellerListController implements Initializable, DataChangeListener {
 		updateTableView();
 	}
 
+	private void initColumnDepartment() {
+		
+		//tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		
+		tableColumnDepartment.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getDepartment()));
+		
+		tableColumnDepartment.setCellFactory(param -> new TableCell<Seller, Department>() {
+
+			@Override
+			protected void updateItem(Department obj, boolean empty) {
+
+				super.updateItem(obj, empty);
+
+				if (obj == null) {
+					setText("");
+					return;
+				}
+
+				setText(obj.getName());
+			}
+
+		});
+	}
+	
 	private void initEditButtons() {
 
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
